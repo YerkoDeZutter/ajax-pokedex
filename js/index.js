@@ -1,8 +1,82 @@
 let pokeName;
+window.onload = function() {
 
-$(document).keydown(function(evt) {
+  let pokeGen = new XMLHttpRequest();
+
+  pokeGen.onreadystatechange = function() {
+    JSON.parse(pokeGen.response).pokemon_species.forEach(thisPokemon => {
+
+      $.get("https://pokeapi.co/api/v2/pokemon/" + thisPokemon.name, function(pokeImage) {
+
+        $('body').append("<img id='" + thisPokemon.name + "' class='pokemonSelect' src='" + pokeImage.sprites.front_default + "' ></img>")
+        console.log(thisPokemon.name);
+
+      })
+
+    })
+  }
+
+// console.log(thisPokemon);
+
+pokeGen.open("GET", "https://pokeapi.co/api/v2/generation/1", false);
+pokeGen.send();
+
+startClickebull()
+
+
+}
+
+$(document).keyup(function(evt) {
   if (evt.keyCode == 13) {
-    pokeName = $("#pokeName").val();
+
+  } else {
+    let pokemonCheck = $(".pokemonSelect");
+    let curInput = $("input").val()
+
+    for (var i = 0; i < $(".pokemonSelect").length; i++) {
+
+      let thispokeCheck = $(pokemonCheck[i]);
+
+      if (thispokeCheck.attr("id").indexOf(curInput) == -1) {
+        thispokeCheck.css("display", "none")
+      } else {
+        thispokeCheck.css("display", "block")
+      }
+
+    }
+
+  }
+
+})
+
+
+
+
+
+
+
+
+
+//blastoise
+
+
+
+
+
+
+
+
+
+function startClickebull() {
+
+  console.log(11);
+
+  $(".pokemonSelect").click(function() {
+
+    $("#pokedex").css("display", "block");
+    pokeName = $(this).val();
+
+    console.log(11);
 
     $.get("https://pokeapi.co/api/v2/pokemon/" + pokeName + "/", function(data) {
       console.log(data);
@@ -43,7 +117,7 @@ $(document).keydown(function(evt) {
 
           curLI = $($("li")[i]);
 
-          let randomMove = Math.floor(Math.random()*data.moves.length)
+          let randomMove = Math.floor(Math.random() * data.moves.length)
 
           curLI.text(data.moves[randomMove].move.name);
 
@@ -69,17 +143,12 @@ $(document).keydown(function(evt) {
 
           pokeColor.open("GET", speciesLink, false);
           pokeColor.send();
-
-          console.log(data.species.url);
         }
 
         return allMoves
       }
     })
-  }
 
-})
+  })
 
-
-
-//blastoise
+}
