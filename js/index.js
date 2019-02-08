@@ -1,36 +1,51 @@
 let pokeName;
 window.onload = function() {
 
-  let pokeGen = new XMLHttpRequest();
+  createGen(1)
 
-  pokeGen.onreadystatechange = function() {
+  function createGen(thisGen) {
 
-    if (pokeGen.readyState == 4 && pokeGen.status == 200) {
+    let pokeGen = new XMLHttpRequest();
 
-      JSON.parse(pokeGen.response).pokemon_species.forEach(thisPokemon => {
+    pokeGen.onreadystatechange = function() {
 
-        $.get("https://pokeapi.co/api/v2/pokemon/" + thisPokemon.name, function(pokeImage) {
+      if (pokeGen.readyState == 4 && pokeGen.status == 200) {
 
-          $('body').append("<img onclick='startClickebull()' id='" + thisPokemon.name + "' class='pokemonSelect' src='" + pokeImage.sprites.front_default + "' ></img>")
-          console.log(thisPokemon.name);
+        JSON.parse(pokeGen.response).pokemon_species.forEach(thisPokemon => {
+
+          $.get("https://pokeapi.co/api/v2/pokemon/" + thisPokemon.name, function(pokeImage) {
+
+            $('#pickAPokemon').append("<img onclick='startClickebull()' id='" + thisPokemon.name + "' class='pokemonSelect' src='" + pokeImage.sprites.front_default + "' ></img>")
+            console.log(thisPokemon.name);
+
+          })
 
         })
 
-      })
+      }
 
     }
 
+    // console.log(thisPokemon);
+
+    pokeGen.open("GET", "https://pokeapi.co/api/v2/generation/" + thisGen, false);
+    pokeGen.send();
+
+
   }
 
-  // console.log(thisPokemon);
-
-  pokeGen.open("GET", "https://pokeapi.co/api/v2/generation/1", false);
-  pokeGen.send();
-
-  startClickebull();
+  $("ol li").click(function() {
+    $('#pickAPokemon').empty();
+    let pickdGen = $(this).text();
+    createGen(pickdGen)
+  })
 
 
 }
+
+
+
+
 
 $(document).keyup(function(evt) {
   if (evt.keyCode == 13) {
@@ -75,85 +90,85 @@ $(document).keyup(function(evt) {
 
 function startClickebull() {
 
-  console.log(11);
-
   $(".pokemonSelect").click(function() {
 
+    $("#pokedex").css("display", "block");
+    pokeName = $(this).attr("id");
 
-  console.log(11);
+    $.get("https://pokeapi.co/api/v2/pokemon/" + pokeName + "/", function(data) {
 
-  $("#pokedex").css("display", "block");
-  pokeName = $(this).attr("id");
+      let speciesLink = data.species.url
 
-  $.get("https://pokeapi.co/api/v2/pokemon/" + pokeName + "/", function(data) {
+      $("#name").text(data.name);
 
-    let speciesLink = data.species.url
+      $("#pokeID").text(data.id);
 
-    $("#name").text(data.name);
+      if (Math.random() <= .02) {
 
-    $("#pokeID").text(data.id);
+        $("#photo").attr("src", data.sprites.front_shiny)
 
-    $("#photo").attr("src", data.sprites.front_default)
-
-    // $("#moves").text(moveSet())
-
-    moveSet()
-
-    // $("#vorigeEvol").attr("src", data)
-
-
-    $.get(speciesLink, function(data3) {
-      if (data3.evolves_from_species != null) {
-        let lastEvolution = data3.evolves_from_species.name;
-        $.get("https://pokeapi.co/api/v2/pokemon/" + lastEvolution + "/", function(data4) {
-          $("#vorigeEvol").attr("src", data4.sprites.front_default)
-        })
       } else {
-        $("#vorigeEvol").attr("src", "")
+        $("#photo").attr("src", data.sprites.front_default)
       }
-    })
+      // $("#moves").text(moveSet())
+
+      moveSet()
+
+      // $("#vorigeEvol").attr("src", data)
+
+
+      $.get(speciesLink, function(data3) {
+        if (data3.evolves_from_species != null) {
+          let lastEvolution = data3.evolves_from_species.name;
+          $.get("https://pokeapi.co/api/v2/pokemon/" + lastEvolution + "/", function(data4) {
+            $("#vorigeEvol").attr("src", data4.sprites.front_default)
+          })
+        } else {
+          $("#vorigeEvol").attr("src", "")
+        }
+      })
 
 
 
 
-    function moveSet() {
-      let allMoves = "moves: ";
-      let curLI;
-      for (var i = 0; i < 4; i++) {
+      function moveSet() {
+        let allMoves = "moves: ";
+        let curLI;
+        for (var i = 0; i < 4; i++) {
 
-        curLI = $($("li")[i]);
+          curLI = $($("ul li")[i]);
 
-        let randomMove = Math.floor(Math.random() * data.moves.length)
+          let randomMove = Math.floor(Math.random() * data.moves.length)
 
-        curLI.text(data.moves[randomMove].move.name);
-
-
+          curLI.text(data.moves[randomMove].move.name);
 
 
-        // normaale js manier
 
-        let pokeColor = new XMLHttpRequest();
 
-        pokeColor.onreadystatechange = function() {
-          if (pokeColor.readyState == 4 && pokeColor.status == 200) {
+          // normaale js manier
 
-            curLI.css("background-color", JSON.parse(pokeColor.response).color.name);
+          let pokeColor = new XMLHttpRequest();
 
-            if (JSON.parse(pokeColor.response).color.name == "white" || JSON.parse(pokeColor.response).color.name == "yellow") {
-              curLI.css("color", "black");
-            } else {
-              curLI.css("color", "white");
+          pokeColor.onreadystatechange = function() {
+            if (pokeColor.readyState == 4 && pokeColor.status == 200) {
+
+              curLI.css("background-color", JSON.parse(pokeColor.response).color.name);
+
+              if (JSON.parse(pokeColor.response).color.name == "white" || JSON.parse(pokeColor.response).color.name == "yellow") {
+                curLI.css("color", "black");
+              } else {
+                curLI.css("color", "white");
+              }
             }
           }
+
+          pokeColor.open("GET", speciesLink, false);
+          pokeColor.send();
         }
 
-        pokeColor.open("GET", speciesLink, false);
-        pokeColor.send();
+        return allMoves
       }
-
-      return allMoves
-    }
-  })
+    })
 
   })
 

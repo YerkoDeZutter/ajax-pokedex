@@ -54,9 +54,29 @@ ul li{
   color: white;
   margin: 5px;
   padding: 5px;
-  width: 100px;
+  width: 150px;
   text-align: center;
 }
+
+ol{
+  display: flex;
+}
+
+ol li{
+  text-align: center;
+  color: white;
+  margin: 10px;
+  padding: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: #878787;
+  text-align: center;
+  cursor: pointer;
+}
+
+
+
+
 
 
 
@@ -78,4 +98,17 @@ ul li{
 
 .pokemonSelect:hover{
   background-color: #c2fcef;
+}
+
+
+
+
+
+
+
+
+
+
+#seartch{
+  text-align: center;
 }
