@@ -73,9 +73,9 @@ ul li{
   height: 100px;
   display: block;
   float: left;
+  cursor: pointer;
 }
 
-.pokemonSelectNone{
-  width: 0;
-  height: 0;
+.pokemonSelect:hover{
+  background-color: #c2fcef;
 }
